@@ -6,7 +6,6 @@ const packagejson = require('./package.json')
 const AsyncAPI = require('./util/asyncAPI');
 const EventPortal = require("@solace-community/eventportal");
 const { parse } = require('@asyncapi/parser')
-const { exit } = require('process');
 
 async function main() {
   // Parse command line args
@@ -135,9 +134,6 @@ async function main() {
       }).map(schema => {
         return schema.versionID;
       });
-    
-    console.log(schemaName)
-    console.log(schemaVersionID)
     
     // Create Event version and associate schema version id to event
     let eventVersionID = await ep.createEventVersion({

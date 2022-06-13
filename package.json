@@ -1,6 +1,6 @@
 {
   "name": "@solace-community/asyncapi-importer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "This CLI tool is used to import and AsyncAPI spec file to Event Portal",
   "main": "index.js",
   "bin": {
