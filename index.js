@@ -110,8 +110,9 @@ async function main() {
   for (var channelName of doc.channelNames()) {
   
     let channel = doc.channel(channelName)
-    let message = channel.hasPublish() ? channel.publish().message() : channel.subscribe().message()
-    let description = channel.hasPublish() ? channel.publish().message().description() : channel.subscribe().message().description()
+    let operation_object = channel.hasPublish() ? channel.publish() : channel.subscribe()
+    let message = operation_object.message()
+    let description = message.description()
     let operation = channel.hasPublish() ? "publish" : "subscribe"
     let eventName = message.json()['x-parser-message-name']
     let schemaName = message.json().payload ? message.json().payload['x-parser-schema-id'] : null
@@ -129,19 +130,55 @@ async function main() {
 
     // Construct address
     let addressLevels = constructAddressLevels(channelName)
-    let schemaVersionID = schemas.filter(schema => {
-        return schema.name === schemaName;
-      }).map(schema => {
-        return schema.versionID;
-      });
-    
+    let schemaVersionID = null
+
+    if (schemaName.includes("anonymous")) {
+      // If we are here, it means that the Event has an inline payload definition (i.e. no $ref to names schema)
+      // Create schema + version on EP with name {eventName}_Payload
+
+      // Create Schema object
+      let schemaID = await ep.createSchemaObject({
+        applicationDomainId: domainID,
+        name: `${eventName}_payload`,
+        shared: false,
+        contentType: "json",
+        schemaType: "jsonSchema"
+      })
+
+      let schemaVersion = eventVersion
+
+      schemaVersionID = await ep.createSchemaVersion({
+        schemaID: schemaID,
+        description: description,
+        version: schemaVersion,
+        displayName: `${eventName}_payload`,
+        content: JSON.stringify(message.json().payload),
+        stateID: message.json()['x-event-state'] || "1"
+      }, overwrite = true)
+  
+      schemas.push({
+        name: `${eventName}_payload`,
+        schemaID: schemaID,
+        versionID: schemaVersionID,
+      })
+
+    } else {
+      // Get Schema Version ID 
+      schemaVersionID = schemas.filter(schema => {
+          return schema.name === schemaName;
+        }).map(schema => {
+          return schema.versionID;
+        });
+      schemaVersionID = schemaVersionID[0]
+    }
+
     // Create Event version and associate schema version id to event
     let eventVersionID = await ep.createEventVersion({
       eventID: eventID,
       displayName: eventName,
       description: description,
       version: eventVersion,
-      schemaVersionId: schemaVersionID[0],
+      schemaVersionId: schemaVersionID,
       deliveryDescriptor:{
         brokerType: "solace",
         address:{
