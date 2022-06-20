@@ -38,3 +38,6 @@ This tool assumes you have defined your Solace Cloud Token as an environment var
 | -f, --file       | Path to AsyncAPI file                | Required |                                                        |
 | -d, --domain     | Event Portal Application Domain Name | Optional | if not defined --> asyncAPI extension |
 | -dID, --domainID | Event Portal Application Domain ID   | Optional | if not defined --> asyncAPI extension |
+
+## To-do
+- [ ] Add Enum support
