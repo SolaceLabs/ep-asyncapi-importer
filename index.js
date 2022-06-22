@@ -114,7 +114,7 @@ async function main() {
     let message = operation_object.message()
     let description = message.description()
     let operation = channel.hasPublish() ? "publish" : "subscribe"
-    let eventName = message.json()['x-parser-message-name']
+    let eventName = message.json()['x-parser-message-name'] || message.json().name
     let schemaName = message.json().payload ? message.json().payload['x-parser-schema-id'] : null
     let eventVersion =  message.json()['x-event-version'] || DEFAULT_EVENT_VERSION
 
