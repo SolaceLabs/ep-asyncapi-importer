@@ -1,6 +1,6 @@
 # AsyncAPI To SolacePubSub+ Event Portal
 
-This tool is used to import an AsyncAPI spec file to Event Portal
+This tool is used to import an AsyncAPI spec file to Event Portal. Note that it requires access to the Event Portal v2.0 which is currently under early access. If you want access please let your account team know or come chat with us over on the [Solace Community Forum](https://solace.community)
 
 ## Installation
 
