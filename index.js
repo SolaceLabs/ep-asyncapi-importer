@@ -217,15 +217,17 @@ async function main() {
   let consumedEvents = []
 
   // Populate produced events
+  // Note: We take into account that AsyncAPI defines the API from the perspective of the application's client
+  // To describe what the application does, we have to reverse the verbs
   events.filter(event => {
-    return event.operation === "publish";
+    return event.operation === "subscribe";
   }).map(event => {
     producedEvents.push(event.versionID)
   });
 
   // Populate consumed events
   events.filter(event => {
-    return event.operation === "subscribe";
+    return event.operation === "publish";
   }).map(event => {
     consumedEvents.push(event.versionID)
   });
